@@ -1,0 +1,176 @@
+:root {
+  --bg: #f7f8fc;
+  --surface: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --primary: #2563eb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.container {
+  width: min(920px, 92vw);
+  margin: 0 auto;
+}
+
+.site-header,
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+}
+
+.brand {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.site-header nav a,
+.site-footer a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.hero {
+  background: linear-gradient(130deg, #eff6ff, #ffffff);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 2.5rem;
+  margin-top: 0.5rem;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+}
+
+.section-block {
+  margin: 2rem auto;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.newsletter-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+}
+
+.newsletter-list li {
+  border-top: 1px solid var(--line);
+}
+
+.newsletter-list li:first-child {
+  border-top: 0;
+}
+
+.newsletter-list a {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  text-decoration: none;
+  color: var(--text);
+  padding: 0.85rem 0;
+}
+
+.newsletter-list a:hover {
+  color: var(--primary);
+}
+
+.news-date {
+  color: var(--muted);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border-radius: 10px;
+  border: 1px solid var(--primary);
+  color: #fff;
+  background: var(--primary);
+  padding: 0.55rem 0.9rem;
+  font-weight: 600;
+}
+
+.button-link.secondary {
+  background: #fff;
+  color: var(--primary);
+}
+
+.all-link-wrap {
+  text-align: center;
+}
+
+.newsletter-content {
+  margin-top: 1rem;
+}
+
+.newsletter-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.newsletter-content a {
+  color: var(--primary);
+}
+
+.muted,
+.empty-message {
+  color: var(--muted);
+}
+
+.hidden {
+  display: none;
+}
+
+.pager {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.button-link.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .hero {
+    padding: 1.4rem;
+  }
+
+  .newsletter-list a {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+}
