@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>eBookRadar | 데일리 뉴스레터</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body data-page="home">
+    <header class="site-header container">
+      <a class="brand" href="index.html">eBookRadar</a>
+      <nav>
+        <a href="newsletters.html">전체 뉴스레터</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero container">
+        <p class="eyebrow">AI · eBook · Publishing Radar</p>
+        <h1>매일 생성되는 마크다운 뉴스레터를<br />가볍고 빠른 웹페이지로 제공합니다.</h1>
+        <p>
+          백엔드 없이 정적 파일만으로 동작하며, 이미지와 링크가 포함된
+          마크다운을 날짜별로 확인할 수 있습니다.
+        </p>
+      </section>
+
+      <section class="container section-block">
+        <div class="section-head">
+          <h2>최근 7일 뉴스레터</h2>
+        </div>
+        <ul id="recent-newsletters" class="newsletter-list"></ul>
+        <p id="recent-empty" class="empty-message hidden">표시할 뉴스레터가 없습니다.</p>
+      </section>
+
+      <section class="container section-block all-link-wrap">
+        <a class="button-link" href="newsletters.html">전체 뉴스레터 보러가기</a>
+      </section>
+    </main>
+
+    <footer class="site-footer container">
+      <small>© eBookRadar. Static-first newsletter archive.</small>
+    </footer>
+
+    <script src="assets/app.js" defer></script>
+  </body>
+</html>

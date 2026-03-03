@@ -1,0 +1,11 @@
+<svg width="960" height="540" viewBox="0 0 960 540" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#g)"/>
+  <text x="80" y="250" font-family="Arial, sans-serif" font-size="56" fill="white" font-weight="700">eBookRadar Newsletter</text>
+  <text x="80" y="320" font-family="Arial, sans-serif" font-size="32" fill="#dbeafe">Daily trend snapshot</text>
+</svg>
