@@ -1,4 +1,85 @@
 const NEWSLETTER_INDEX_PATH = 'content/index.json';
+const THEME_STORAGE_KEY = 'ebookradar-theme';
+const DEFAULT_THEME = 'light';
+const SUPPORTED_THEMES = ['light', 'dark', 'eink'];
+
+// 한국어 주석: 저장된 테마를 안전하게 읽어 초기 테마를 결정한다.
+function getSavedTheme() {
+  try {
+    const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme && SUPPORTED_THEMES.includes(savedTheme)) {
+      return savedTheme;
+    }
+  } catch (error) {
+    return DEFAULT_THEME;
+  }
+
+  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    return 'dark';
+  }
+
+  return DEFAULT_THEME;
+}
+
+// 한국어 주석: HTML 루트 속성에 테마를 반영해 전역 CSS 변수를 전환한다.
+function applyTheme(theme) {
+  const nextTheme = SUPPORTED_THEMES.includes(theme) ? theme : DEFAULT_THEME;
+  document.documentElement.dataset.theme = nextTheme;
+  document.documentElement.style.colorScheme = nextTheme === 'dark' ? 'dark' : 'light';
+  return nextTheme;
+}
+
+// 한국어 주석: 헤더에 테마 선택 UI를 동적으로 삽입하고 선택 상태를 저장한다.
+function mountThemeControl() {
+  const header = document.querySelector('.site-header');
+  if (!header || document.getElementById('theme-select')) {
+    return;
+  }
+
+  const tools = document.createElement('div');
+  tools.className = 'header-tools';
+
+  const label = document.createElement('label');
+  label.className = 'theme-label';
+  label.setAttribute('for', 'theme-select');
+  label.textContent = '테마';
+
+  const select = document.createElement('select');
+  select.id = 'theme-select';
+  select.className = 'theme-select';
+  select.setAttribute('aria-label', '테마 선택');
+
+  const options = [
+    { value: 'light', text: '라이트' },
+    { value: 'dark', text: '다크' },
+    { value: 'eink', text: 'e-ink' }
+  ];
+
+  options.forEach((option) => {
+    const optionNode = document.createElement('option');
+    optionNode.value = option.value;
+    optionNode.textContent = option.text;
+    select.append(optionNode);
+  });
+
+  select.value = document.documentElement.dataset.theme || DEFAULT_THEME;
+  select.addEventListener('change', (event) => {
+    const selectedTheme = applyTheme(event.target.value);
+    try {
+      window.localStorage.setItem(THEME_STORAGE_KEY, selectedTheme);
+    } catch (error) {
+      // 한국어 주석: 저장소 접근 불가 환경(사파리 프라이빗 모드 등)에서는 무시하고 테마만 적용한다.
+    }
+  });
+
+  tools.append(label, select);
+  header.append(tools);
+}
+
+function initializeTheme() {
+  const initialTheme = getSavedTheme();
+  applyTheme(initialTheme);
+}
 
 async function loadNewsletterIndex() {
   const response = await fetch(NEWSLETTER_INDEX_PATH);
@@ -149,6 +230,9 @@ async function renderDetail() {
 }
 
 function init() {
+  initializeTheme();
+  mountThemeControl();
+
   const page = document.body.dataset.page;
 
   if (page === 'home') {

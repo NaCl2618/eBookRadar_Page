@@ -1,10 +1,47 @@
 :root {
   --bg: #f7f8fc;
   --surface: #ffffff;
+  --surface-elevated: #ffffff;
   --text: #1f2937;
   --muted: #6b7280;
   --line: #e5e7eb;
   --primary: #2563eb;
+  --primary-contrast: #ffffff;
+  --hero-start: #eff6ff;
+  --hero-end: #ffffff;
+  --focus-ring: rgba(37, 99, 235, 0.35);
+  --shadow-soft: 0 8px 24px rgba(15, 23, 42, 0.06);
+}
+
+[data-theme='dark'] {
+  --bg: #0f141b;
+  --surface: #171f2a;
+  --surface-elevated: #1d2734;
+  --text: #e6edf5;
+  --muted: #9caec2;
+  --line: #283647;
+  --primary: #7eb6ff;
+  --primary-contrast: #0f141b;
+  --hero-start: #162536;
+  --hero-end: #111a24;
+  --focus-ring: rgba(126, 182, 255, 0.4);
+  --shadow-soft: 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+/* 한국어 주석: e-ink 디스플레이를 위해 색 대비를 높이고 채도를 제거한다. */
+[data-theme='eink'] {
+  --bg: #f9f9f7;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --text: #111111;
+  --muted: #333333;
+  --line: #262626;
+  --primary: #111111;
+  --primary-contrast: #ffffff;
+  --hero-start: #ffffff;
+  --hero-end: #ffffff;
+  --focus-ring: rgba(0, 0, 0, 0.35);
+  --shadow-soft: none;
 }
 
 * {
@@ -13,10 +50,11 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Pretendard', 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .container {
@@ -32,6 +70,17 @@ body {
   padding: 1rem 0;
 }
 
+.site-header {
+  gap: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.site-header nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .brand {
   font-size: 1.1rem;
   font-weight: 700;
@@ -45,12 +94,61 @@ body {
   text-decoration: none;
 }
 
+/* 한국어 주석: 푸터 클릭 유도 문구의 가독성과 링크 강조를 조정한다. */
+.footer-cta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.footer-cta a {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.site-header nav a:hover,
+.site-footer a:hover {
+  color: var(--text);
+}
+
+.header-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-left: auto;
+}
+
+.theme-label {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.theme-select {
+  border: 1px solid var(--line);
+  background: var(--surface-elevated);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 0.35rem 0.55rem;
+  font: inherit;
+  min-width: 6.8rem;
+}
+
+.theme-select:focus-visible,
+.button-link:focus-visible,
+.newsletter-list a:focus-visible,
+.site-header nav a:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .hero {
-  background: linear-gradient(130deg, #eff6ff, #ffffff);
+  background: linear-gradient(130deg, var(--hero-start), var(--hero-end));
   border: 1px solid var(--line);
   border-radius: 16px;
   padding: 2.5rem;
   margin-top: 0.5rem;
+  box-shadow: var(--shadow-soft);
 }
 
 .eyebrow {
@@ -72,6 +170,7 @@ h3 {
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 1.25rem;
+  box-shadow: var(--shadow-soft);
 }
 
 .newsletter-list {
@@ -114,14 +213,14 @@ h3 {
   text-decoration: none;
   border-radius: 10px;
   border: 1px solid var(--primary);
-  color: #fff;
+  color: var(--primary-contrast);
   background: var(--primary);
   padding: 0.55rem 0.9rem;
   font-weight: 600;
 }
 
 .button-link.secondary {
-  background: #fff;
+  background: var(--surface-elevated);
   color: var(--primary);
 }
 
@@ -141,6 +240,29 @@ h3 {
 
 .newsletter-content a {
   color: var(--primary);
+  text-underline-offset: 3px;
+}
+
+[data-theme='dark'] .newsletter-content img {
+  filter: brightness(0.92) contrast(1.05);
+}
+
+[data-theme='eink'] .newsletter-content img {
+  filter: grayscale(1) contrast(1.18);
+}
+
+[data-theme='eink'] .hero {
+  background: var(--surface);
+}
+
+[data-theme='eink'] .eyebrow,
+[data-theme='eink'] .button-link,
+[data-theme='eink'] .newsletter-content a {
+  color: var(--text);
+}
+
+[data-theme='eink'] .button-link {
+  background: var(--surface);
 }
 
 .muted,
@@ -165,12 +287,49 @@ h3 {
 }
 
 @media (max-width: 640px) {
+  /* 한국어 주석: 모바일에서는 헤더 도구와 네비를 세로 흐름으로 재배치한다. */
   .hero {
     padding: 1.4rem;
+  }
+
+  /* 한국어 주석: 모바일 푸터에서 CTA 문구와 저작권 문구를 세로로 정렬한다. */
+  .site-footer {
+    align-items: flex-start;
+    gap: 0.45rem;
+    flex-direction: column;
+  }
+
+  .site-header {
+    align-items: flex-start;
+  }
+
+  .site-header nav {
+    order: 3;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .header-tools {
+    margin-left: 0;
+    order: 2;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .theme-select {
+    min-width: 6rem;
   }
 
   .newsletter-list a {
     flex-direction: column;
     gap: 0.15rem;
+  }
+
+  .pager {
+    flex-direction: column;
+  }
+
+  .pager .button-link {
+    width: 100%;
   }
 }
