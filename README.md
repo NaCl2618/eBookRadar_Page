@@ -31,3 +31,17 @@ python3 -m http.server 4173
 ```
 
 브라우저에서 `http://localhost:4173` 접속
+
+## index.json 자동 갱신
+
+`content/*.md` 파일을 스캔해서 `content/index.json`을 자동으로 갱신하는 스크립트가 포함되어 있습니다.
+
+```bash
+node scripts/update-newsletter-index.js
+```
+
+- 마크다운 파일명 규칙: `YYYY-MM-DD.md`
+- 제목 규칙: 각 마크다운의 첫 `#` 제목(H1) 우선, 없으면 기존 `index.json` 제목 또는 기본 제목 사용
+- 정렬 규칙: 날짜 내림차순
+
+GitHub Actions 워크플로(`.github/workflows/update-newsletter-index.yml`)는 위 스크립트를 실행하고, 변경이 있을 때만 `content/index.json`을 자동 커밋/푸시합니다.

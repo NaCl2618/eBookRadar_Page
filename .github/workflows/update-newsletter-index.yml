@@ -1,0 +1,99 @@
+name: Update Newsletter Index
+
+on:
+  # 한국어 주석: 수동 실행을 지원한다.
+  workflow_dispatch:
+  # 한국어 주석: content 폴더가 변경되면 실행 후 마크다운 파일 수 증감 여부를 판단한다.
+  push:
+    paths:
+      - "content/**"
+
+jobs:
+  update-index:
+    runs-on: ubuntu-latest
+    permissions:
+      # 한국어 주석: index.json 자동 커밋/푸시를 위해 쓰기 권한이 필요하다.
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # 한국어 주석: 이전 커밋과 현재 커밋의 파일 수를 비교하기 위해 전체 히스토리를 가져온다.
+          fetch-depth: 0
+
+      - name: Check markdown file set delta
+        id: set-check
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+        run: |
+          # 한국어 주석: workflow_dispatch에서는 강제 실행을 위해 set_changed를 true로 둔다.
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "previous_count=manual" >> "$GITHUB_OUTPUT"
+            echo "current_count=manual" >> "$GITHUB_OUTPUT"
+            echo "set_changed=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # 한국어 주석: before SHA가 없거나 초기 푸시인 경우 이전 파일 집합은 비어 있다고 본다.
+          if [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            previous_list=$(git ls-tree -r --name-only "$BEFORE_SHA" -- content | awk '/^content\/[^/]+\.md$/ {print $0}' | sort)
+          else
+            previous_list=''
+          fi
+
+          # 한국어 주석: 현재 푸시 SHA 기준 md 파일 집합을 계산한다.
+          current_list=$(git ls-tree -r --name-only "$AFTER_SHA" -- content | awk '/^content\/[^/]+\.md$/ {print $0}' | sort)
+
+          previous_count=$(printf "%s\n" "$previous_list" | sed '/^$/d' | wc -l | tr -d ' ')
+          current_count=$(printf "%s\n" "$current_list" | sed '/^$/d' | wc -l | tr -d ' ')
+
+          previous_hash=$(printf "%s\n" "$previous_list" | sha256sum | awk '{print $1}')
+          current_hash=$(printf "%s\n" "$current_list" | sha256sum | awk '{print $1}')
+
+          echo "previous_count=$previous_count" >> "$GITHUB_OUTPUT"
+          echo "current_count=$current_count" >> "$GITHUB_OUTPUT"
+
+          if [ "$previous_hash" != "$current_hash" ]; then
+            echo "set_changed=true" >> "$GITHUB_OUTPUT"
+            echo "Markdown file set changed."
+            echo "[before]"
+            printf "%s\n" "$previous_list"
+            echo "[after]"
+            printf "%s\n" "$current_list"
+          else
+            echo "set_changed=false" >> "$GITHUB_OUTPUT"
+            echo "Markdown file set unchanged."
+          fi
+
+      - name: Skip when markdown file set unchanged
+        if: steps.set-check.outputs.set_changed != 'true'
+        run: |
+          echo "Skip index generation because markdown file set did not change."
+          echo "previous_count=${{ steps.set-check.outputs.previous_count }}, current_count=${{ steps.set-check.outputs.current_count }}"
+
+      - name: Setup Node.js
+        if: steps.set-check.outputs.set_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate content index
+        if: steps.set-check.outputs.set_changed == 'true'
+        run: node scripts/update-newsletter-index.js
+
+      - name: Commit and push if changed
+        if: steps.set-check.outputs.set_changed == 'true'
+        run: |
+          # 한국어 주석: 변경이 없으면 커밋/푸시를 생략한다.
+          if git diff --quiet -- content/index.json; then
+            echo "No index changes."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add content/index.json
+          git commit -m "chore: auto-update content index"
+          git push
