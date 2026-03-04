@@ -173,6 +173,32 @@ function parseTitleFromMarkdown(markdown, fallback) {
   return fallback;
 }
 
+// 한국어 주석: 브라우저에 삽입하기 전 위험한 태그/속성/URL 스킴을 제거해 XSS를 완화한다.
+function sanitizeHtml(unsafeHtml) {
+  if (typeof unsafeHtml !== 'string') {
+    return '';
+  }
+
+  return unsafeHtml
+    .replace(/<\s*(script|iframe|object|embed|link|style|meta)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, '')
+    .replace(/<\s*(script|iframe|object|embed|link|style|meta)[^>]*\/?\s*>/gi, '')
+    .replace(/\son\w+\s*=\s*(['"])[\s\S]*?\1/gi, '')
+    .replace(/\son\w+\s*=\s*[^\s>]+/gi, '')
+    .replace(/\s(srcdoc)\s*=\s*(['"])[\s\S]*?\2/gi, '')
+    .replace(/\s(href|src)\s*=\s*(['"])\s*(javascript:|data:)/gi, ' $1=$2#');
+}
+
+// 한국어 주석: marked 사용 시 sanitize 후 innerHTML로 렌더링하고, 미사용 시 textContent로 안전 출력한다.
+function renderMarkdownContent(contentNode, markdown) {
+  if (window.marked) {
+    const renderedHtml = window.marked.parse(markdown);
+    contentNode.innerHTML = sanitizeHtml(renderedHtml);
+    return;
+  }
+
+  contentNode.textContent = markdown;
+}
+
 async function renderDetail() {
   const titleNode = document.getElementById('newsletter-title');
   const dateNode = document.getElementById('newsletter-date');
@@ -208,11 +234,7 @@ async function renderDetail() {
     document.title = `${computedTitle} | eBookRadar`;
     dateNode.textContent = current.date;
 
-    if (window.marked) {
-      contentNode.innerHTML = marked.parse(markdown);
-    } else {
-      contentNode.innerHTML = markdown;
-    }
+    renderMarkdownContent(contentNode, markdown);
 
     const older = items[currentIndex + 1] || null;
     const newer = items[currentIndex - 1] || null;
