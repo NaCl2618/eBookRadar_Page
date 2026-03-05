@@ -23,6 +23,18 @@
         </p>
       </section>
 
+      <section class="container latest-section" aria-labelledby="latest-newsletter-heading">
+        <div class="latest-card" id="latest-newsletter-card">
+          <!-- 한국어 주석: 최신 뉴스레터 데이터가 로드되기 전 기본 안내 문구를 노출한다. -->
+          <p class="latest-label" id="latest-newsletter-heading">최신 뉴스레터</p>
+          <h2 class="latest-title">최신 소식을 불러오는 중입니다.</h2>
+          <p class="latest-date" id="latest-newsletter-date">-</p>
+          <!-- 한국어 주석: 최신 뉴스레터 원문을 메인 페이지에서 바로 읽을 수 있도록 콘텐츠 영역을 제공한다. -->
+          <div class="newsletter-content latest-content" id="latest-newsletter-content"></div>
+        </div>
+        <p id="latest-empty" class="empty-message hidden">최신 뉴스레터를 표시할 수 없습니다.</p>
+      </section>
+
       <section class="container section-block">
         <div class="section-head">
           <h2>최근 7일 뉴스레터</h2>
@@ -45,6 +57,8 @@
       <small>© eBookRadar. Static-first newsletter archive.</small>
     </footer>
 
+    <!-- 한국어 주석: 메인에서도 상세 페이지와 동일한 마크다운 렌더러(marked)를 사용한다. -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="assets/app.js" defer></script>
   </body>
 </html>
