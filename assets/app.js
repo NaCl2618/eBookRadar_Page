@@ -226,8 +226,6 @@ function renderMarkdownContent(contentNode, markdown) {
 }
 
 async function renderDetail() {
-  const titleNode = document.getElementById('newsletter-title');
-  const dateNode = document.getElementById('newsletter-date');
   const contentNode = document.getElementById('newsletter-content');
   const errorNode = document.getElementById('detail-error');
   const prevLink = document.getElementById('prev-link');
@@ -255,10 +253,8 @@ async function renderDetail() {
 
     const markdown = await mdResponse.text();
     const computedTitle = parseTitleFromMarkdown(markdown, current.title || current.date);
-
-    titleNode.textContent = computedTitle;
+    // 한국어 주석: 상단 제목/날짜 UI를 제거했기 때문에 탭 제목만 마크다운 제목으로 동기화한다.
     document.title = `${computedTitle} | eBookRadar`;
-    dateNode.textContent = current.date;
 
     renderMarkdownContent(contentNode, markdown);
 
@@ -269,8 +265,7 @@ async function renderDetail() {
   } catch (error) {
     errorNode.textContent = error.message;
     errorNode.classList.remove('hidden');
-    titleNode.textContent = '뉴스레터를 불러올 수 없습니다.';
-    dateNode.textContent = '';
+    document.title = '뉴스레터 | eBookRadar';
     contentNode.innerHTML = '';
     setPagerLink(prevLink, null, '이전 뉴스레터');
     setPagerLink(nextLink, null, '다음 뉴스레터');
@@ -293,3 +288,4 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
