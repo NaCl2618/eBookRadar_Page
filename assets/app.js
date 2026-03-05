@@ -117,8 +117,6 @@ async function renderHome() {
   const list = document.getElementById('recent-newsletters');
   const empty = document.getElementById('recent-empty');
   const latestCard = document.getElementById('latest-newsletter-card');
-  const latestTitle = latestCard?.querySelector('.latest-title');
-  const latestDate = document.getElementById('latest-newsletter-date');
   const latestContent = document.getElementById('latest-newsletter-content');
   const latestEmpty = document.getElementById('latest-empty');
 
@@ -127,16 +125,14 @@ async function renderHome() {
     const recent = items.slice(0, 7);
     const latest = items[0];
 
-    // 한국어 주석: 최신 항목이 존재하면 히어로 아래 강조 카드에 제목/날짜/본문을 채운다.
-    if (latest && latestTitle && latestDate && latestContent) {
+    // 한국어 주석: 중복 헤더를 피하기 위해 메인 카드에는 마크다운 본문만 렌더링한다.
+    if (latest && latestContent) {
       const latestResponse = await fetch(latest.file);
       if (!latestResponse.ok) {
         throw new Error('최신 뉴스레터 본문을 불러오지 못했습니다.');
       }
 
       const latestMarkdown = await latestResponse.text();
-      latestTitle.textContent = parseTitleFromMarkdown(latestMarkdown, latest.title || latest.date);
-      latestDate.textContent = latest.date;
       renderMarkdownContent(latestContent, latestMarkdown);
     } else if (latestEmpty) {
       latestCard?.classList.add('hidden');
